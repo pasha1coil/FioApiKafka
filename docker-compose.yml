@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  postgresql:
+    container_name: pg
+    image: postgres:alpine
+    ports:
+      - "5432:5432"
+    environment:
+      - POSTGRES_USER=${DB_UNAME}
+      - POSTGRES_PASSWORD=${DB_PASS}
+      - POSTGRES_DB=${DB_NAMEDB}
+      - PG_DATA:/data/postgres
+  zookeeper:
+    image: 'confluentinc/cp-zookeeper:latest'
+    environment:
+      - ZOOKEEPER_CLIENT_PORT=2181
+    ports:
+      - 2181:2181
+
+  kafka:
+    image: 'confluentinc/cp-kafka:latest'
+    depends_on:
+      - zookeeper
+    environment:
+      - KAFKA_ZOOKEEPER_CONNECT=zookeeper:2181
+      - KAFKA_ADVERTISED_LISTENERS=PLAINTEXT://${KAFKA_BROKER}
+      - KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=1
+      - KAFKA_CREATE_TOPICS=${KAFKA_FIO_TOPIC}:1:1
+      - KAFKA_CREATE_TOPICS=${KAFKA_FIO_FAILED_TOPIC}:1:1
+    ports:
+      - 9092:9092
+  redis:
+    image: 'redis:latest'
+    command: [ "redis-server", "--appendonly", "yes" ]
+    ports:
+      - 6379:6379
