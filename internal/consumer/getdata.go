@@ -22,15 +22,17 @@ type NationURL struct {
 }
 
 func GetData(data []byte) (*models.PersonOut, error) {
+	log.Infoln("Start get data - gender,age,country from api")
 	var person models.Person
 	err := json.Unmarshal(data, &person)
 	if err != nil {
 		return nil, fmt.Errorf("error unmarshal data to Person struct:%s", err.Error())
 	}
 	genderURL := "https://api.genderize.io?name=" + person.Name
-	agURL := "https://api.agify.io?name=" + person.Name
+	ageURL := "https://api.agify.io?name=" + person.Name
 	nationalURL := "https://api.nationalize.io/?name=" + person.Name
 
+	log.Infoln("Get gender")
 	resp, err := http.Get(genderURL)
 	if err != nil {
 		return nil, fmt.Errorf("error obtaining gender: %s", err.Error())
@@ -46,7 +48,8 @@ func GetData(data []byte) (*models.PersonOut, error) {
 		return nil, fmt.Errorf("error parsing gender response: %s", err.Error())
 	}
 
-	resp, err = http.Get(agURL)
+	log.Infoln("Get age")
+	resp, err = http.Get(ageURL)
 	if err != nil {
 		return nil, fmt.Errorf("error obtaining age: %s", err.Error())
 	}
@@ -61,6 +64,7 @@ func GetData(data []byte) (*models.PersonOut, error) {
 		return nil, fmt.Errorf("error parsing age response: %s", err.Error())
 	}
 
+	log.Infoln("Get country")
 	resp, err = http.Get(nationalURL)
 	if err != nil {
 		return nil, fmt.Errorf("error obtaining nationality: %s", err.Error())
@@ -76,7 +80,7 @@ func GetData(data []byte) (*models.PersonOut, error) {
 		return nil, fmt.Errorf("error parsing nationality response: %s", err.Error())
 	}
 	if gender.Gender == "" || age.Age == 0 || len(nation.Country) == 0 {
-		log.Error("Failed FIO data, no such data - Gender/Age/Country")
+		log.Error("failed FIO data, no such data - Gender/Age/Country")
 		return nil, fmt.Errorf("failed FIO")
 	}
 

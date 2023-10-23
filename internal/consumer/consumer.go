@@ -1,6 +1,7 @@
 package consumer
 
 import (
+	"FioapiKafka/internal/models"
 	"context"
 	"github.com/segmentio/kafka-go"
 	log "github.com/sirupsen/logrus"
@@ -8,7 +9,7 @@ import (
 )
 
 func InitReader(broker []string, topic string) *kafka.Reader {
-	log.Infoln("Init reader...")
+	log.Infof("Init reader... Topic:%s", topic)
 	reader := kafka.NewReader(kafka.ReaderConfig{
 		Brokers: broker,
 		Topic:   topic,
@@ -16,7 +17,7 @@ func InitReader(broker []string, topic string) *kafka.Reader {
 	return reader
 }
 
-func InitConsumerFIO(broker []string, topic string) context.CancelFunc {
+func InitConsumerFIO(broker []string, topic string, aproovedFIO chan *models.PersonOut) context.CancelFunc {
 	reader := InitReader(broker, topic)
 
 	ctx, cancel := context.WithCancel(context.Background())
@@ -30,17 +31,18 @@ func InitConsumerFIO(broker []string, topic string) context.CancelFunc {
 					reader.Close()
 					return
 				}
-				log.Fatalf("Failed to read message: %s", err.Error())
+				log.Fatalf("failed to read message: %s", err.Error())
 			}
 			log.Infof("Received message from %s: %v", msg.Topic, string(msg.Value))
 			data, err := GetData(msg.Value)
 			if err != nil {
 				err := WriterToField(msg.Value)
 				if err != nil {
-					log.Errorf("Error writing a message to KAFKA FIO_FAILED_TOPIC: %s", err.Error())
+					log.Errorf("error writing a message to KAFKA FIO_FAILED_TOPIC: %s", err.Error())
 				}
+			} else {
+				aproovedFIO <- data
 			}
-			log.Infoln(data)
 		}
 	}()
 
@@ -61,9 +63,9 @@ func InitConsumerFailed(broker []string, topic string) context.CancelFunc {
 					reader.Close()
 					return
 				}
-				log.Fatalf("Failed to read message: %s", err.Error())
+				log.Fatalf("failed to read message: %s", err.Error())
 			}
-			log.Infof("New field message from %s: %v", msg.Topic, string(msg.Value))
+			log.Infof("new field message from %s: %v", msg.Topic, string(msg.Value))
 		}
 	}()
 
@@ -80,7 +82,7 @@ func WriterToField(data []byte) error {
 	log.Infoln("Recording message to KAFKA FIO_FAILED_TOPIC")
 	err := writer.WriteMessages(context.Background(), kafka.Message{Value: data})
 	if err != nil {
-		log.Errorf("Error writing a message to KAFKA FIO_FAILED_TOPIC: %s", err.Error())
+		log.Errorf("error writing a message to KAFKA FIO_FAILED_TOPIC: %s", err.Error())
 		return err
 	}
 	writer.Close()

@@ -6,12 +6,17 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+type RedisConfig struct {
+	Addr string
+	Pass string
+}
+
 var ctx = context.Background()
 
-func InitRedis() (*redis.Client, error) {
+func InitRedis(cfg *RedisConfig) (*redis.Client, error) {
 	cache := redis.NewClient(&redis.Options{
-		Addr:     "localhost:6379",
-		Password: "",
+		Addr:     cfg.Addr,
+		Password: cfg.Pass,
 		DB:       0,
 	})
 	log.Infoln("Check redis...")

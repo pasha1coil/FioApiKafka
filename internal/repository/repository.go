@@ -7,9 +7,13 @@ import (
 )
 
 type PersonRepository interface {
-	GetPeople() ([]*models.Person, error)
-	GetPersonByID(id string) (*models.Person, error)
-	UpdatePerson(id string, person *models.Person)
+	CreatePeople(data *models.PersonOut)
+	GetPeople() ([]*models.PersonOut, error)
+	GetPersonByID(id string) (*models.PersonOut, error)
+	GetPersonsByName(name string) ([]*models.PersonOut, error)
+	GetPersonsByAge(age string) ([]*models.PersonOut, error)
+	GetPersonsByGender(gender string) ([]*models.PersonOut, error)
+	UpdatePerson(id string, person *models.PersonOut) error
 	DeletePerson(id string) error
 }
 
