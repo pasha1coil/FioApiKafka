@@ -1,0 +1,73 @@
+query {
+  peopleAll {
+    name
+    surname
+    patronymic
+    gender
+    age
+    nationality {
+      countryId
+      probability
+    }
+  }
+}
+Запрос (Query) человека по ID:
+query {
+  personById(id: "1") {
+    name
+    surname
+    patronymic
+    gender
+    age
+    nationality {
+      countryId
+      probability
+    }
+  }
+}
+Запрос (Query) людей по имени:
+query {
+  personsByName(name: "Ivan") {
+    name
+    surname
+    patronymic
+    gender
+    age
+    nationality {
+      countryId
+      probability
+    }
+  }
+}
+Запрос (Query) людей по возрасту:
+query {
+  personsByAge(age: 30) {
+    name
+    surname
+    patronymic
+    gender
+    age
+    nationality {
+      countryId
+      probability
+    }
+  }
+}
+Запрос (Query) людей по полу:
+query {
+  personsByGender(gender: "male") {
+    name
+    surname
+    patronymic
+    gender
+    age
+    nationality {
+      countryId
+      probability
+    }
+  }
+}
+Мутация (Mutation) для удаления человека. Замените <id> идентификатором человека, которого вы хотите удалить:
+mutation {
+  deletePerson(id: "1")
+}

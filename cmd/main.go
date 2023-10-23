@@ -2,6 +2,7 @@ package main
 
 import (
 	"FioapiKafka/internal/consumer"
+	"FioapiKafka/internal/graphqlhandler"
 	"FioapiKafka/internal/models"
 	repository2 "FioapiKafka/internal/repository"
 	"FioapiKafka/internal/repository/database"
@@ -68,6 +69,14 @@ func main() {
 	})
 
 	app.Use(recover.New())
+
+	// GraphQL handlers
+	log.Infoln("Init GraphQL handler")
+	gh := graphqlhandler.NewGraphQLHandler(service)
+	app.All("/graphql", func(c *fiber.Ctx) error {
+		result := gh.ExecuteQuery(string(c.Body()))
+		return c.JSON(result)
+	})
 
 	// Инициализация API хэндлеров
 	log.Infoln("Init handlers...")
