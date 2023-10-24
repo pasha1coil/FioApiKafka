@@ -1,11 +1,11 @@
 # FioApiKafka
-API по определения гендера, пола и национальности по указанному имени
+API по определению гендера, пола и национальности по указанному имени
 <details>
   <summary>Содержание</summary>
   <ol>
     <li><a href="#установка-и-запуск">Установка и запуск</a></li>
     <li><a href="#реализовано">Реализовано</a></li>
-    <li><a href="#примеры запросов">Возникшие вопросы</a></li>
+    <li><a href="#примеры запросов">Примеры запросов</a></li>
   </ol>
 </details>
 
@@ -42,8 +42,8 @@ GraphQL методы:
 Также реализованно:
 1. Кеширование в Redis
 2. Apache Kafka для реализации очереди сообщений с хендлера создания человека, два топика - FIO и FIO_FAILED. В FIO записываются все сообщения, далее сортируются, либо в канал для работы, либо в FIO_FAILED. В FIO_FAILED попадают те сообщения которые получили нулевые значения из api ответа по идентификации пола, возраста и национальности.
-3. Тесты для service и repository. в планах покрыть весь код тестами.
-4. В качестве веб фреймворка бфл использован gofiber.
+3. Тесты для service и repository. В планах покрыть весь код тестами.
+4. В качестве веб фреймворка был использован gofiber.
 5. БД Postgres
 
 ## Примеры запросов
@@ -72,7 +72,7 @@ GraphQL методы:
     }
   ```
 - OUTPUT
-  ```json
+  ```
   {
     "OK" - ушло в работу
   }
@@ -328,12 +328,12 @@ GraphQL методы:
         ]
     }
   ```
-8. http://localhost:8080/handler/people/1 DELETE, меняем json ALEX:
+8. http://localhost:8080/handler/people/1 DELETE:
  - делаем запрос - http://localhost:8080/handler/people/1, последний / - id того кого удаляем
 
 9. http://localhost:8080/graphql ALL, тут приведу примеры query и mutation запросов через GraphQL:
 - peopleAll
-  ```json
+```
    query {
       peopleAll {
       name
@@ -347,9 +347,9 @@ GraphQL методы:
       }
     }
   }
-  ```
+```
 - personById
-```json
+```
    query {
     personById(id: "1") {
     name
@@ -363,9 +363,9 @@ GraphQL методы:
       }
     }
   }
-  ```
+```
 - personsByName
-```json
+```
    query {
     personsByName(name: "Alex") {
     name
@@ -379,9 +379,9 @@ GraphQL методы:
       }
     }
   }
-  ```
+```  
 - personsByAge
-```json
+```
    query {
     personsByAge(age: 46) {
     name
@@ -395,9 +395,9 @@ GraphQL методы:
       }
     }
   }
-  ```
+```
 - personsByGender
-```json
+```
    query {
     personsByGender(gender: "male") {
     name
@@ -411,9 +411,9 @@ GraphQL методы:
       }
     }
   }
-  ```
+```
 - deletePerson
-```json
+```
    mutation {
     deletePerson(id: "1")
   }
