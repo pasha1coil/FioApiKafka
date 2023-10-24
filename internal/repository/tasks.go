@@ -177,8 +177,11 @@ func (r *repository) GetPersonsByGender(gender string) ([]*models.PersonOut, err
 }
 
 func (r *repository) UpdatePerson(id string, person *models.PersonOut) error {
+	err := r.CheckPerson(id)
+	if err != nil {
+		return err
+	}
 	log.Infof("Start update person by id:%s", id)
-
 	NationJSON, err := json.Marshal(person.Nationality)
 	if err != nil {
 		log.Errorf("error marshaling nationality:%s", err.Error())
@@ -187,6 +190,7 @@ func (r *repository) UpdatePerson(id string, person *models.PersonOut) error {
 
 	_, err = r.db.Exec("UPDATE fioapi SET name=$1, surname=$2, patronymic=$3, age=$4, gender=$5, nationality=$6 WHERE id=$7",
 		person.Name, person.Surname, person.Patronymic, person.Age, person.Gender, NationJSON, id)
+
 	if err != nil {
 		log.Errorf("error updating data in db:%s", err.Error())
 		return err
@@ -232,5 +236,22 @@ func (r *repository) DeletePerson(id string) error {
 
 	log.Infof("Successfully deleted person with id: %s", id)
 
+	return nil
+}
+
+func (r *repository) CheckPerson(id string) error {
+	log.Infof("Start check person by id:%s", id)
+
+	personExist := &models.PersonOut{}
+	err := r.db.QueryRow("SELECT * FROM fioapi WHERE id = $1", id).Scan(&personExist)
+	if err != nil {
+		if err == sql.ErrNoRows {
+			log.Errorf("error: person with id: %s does not exist", id)
+			return err
+		} else {
+			log.Errorf("error occurred: %s", err.Error())
+			return err
+		}
+	}
 	return nil
 }

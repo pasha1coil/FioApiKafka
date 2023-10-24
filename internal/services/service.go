@@ -6,6 +6,8 @@ import (
 	log "github.com/sirupsen/logrus"
 )
 
+//go:generate mockgen -source=service.go -destination=mocks/mock.go
+
 type PersonService interface {
 	GetPeople() ([]*models.PersonOut, error)
 	GetPersonByID(id string) (*models.PersonOut, error)

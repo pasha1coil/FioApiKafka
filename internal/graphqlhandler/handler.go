@@ -154,8 +154,8 @@ func (gh *graphqlHandler) createSchema(service *services.Service) *graphql.Schem
 				},
 				Resolve: func(params graphql.ResolveParams) (interface{}, error) {
 					id, _ := params.Args["id"].(string)
-					service.DeletePerson(id)
-					return "Person deleted successfully.", nil
+					err := service.DeletePerson(id)
+					return "Person deleted successfully.", err
 				},
 			},
 		},

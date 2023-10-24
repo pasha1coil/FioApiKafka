@@ -5,6 +5,7 @@ import (
 	"FioapiKafka/internal/services"
 	"context"
 	"encoding/json"
+	"github.com/go-playground/validator/v10"
 	"os"
 
 	"github.com/gofiber/fiber/v2"
@@ -103,6 +104,14 @@ func (h *Handlers) CreatePerson(c *fiber.Ctx) error {
 			"error": err.Error(),
 		})
 	}
+
+	validate := validator.New()
+	if err := validate.Struct(person); err != nil {
+		return c.Status(fiber.StatusBadRequest).JSON(fiber.Map{
+			"error": err.Error(),
+		})
+	}
+
 	personJSON, _ := json.Marshal(person)
 
 	writer := &kafka.Writer{
@@ -135,7 +144,7 @@ func (h *Handlers) UpdatePerson(c *fiber.Ctx) error {
 	err := h.service.UpdatePerson(id, person)
 	if err != nil {
 		return c.Status(fiber.StatusInternalServerError).JSON(fiber.Map{
-			"error": err.Error(),
+			"error": "person does not exist",
 		})
 	}
 

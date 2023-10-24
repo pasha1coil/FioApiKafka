@@ -6,6 +6,8 @@ import (
 	"github.com/redis/go-redis/v9"
 )
 
+//go:generate mockgen -source=repository.go -destination=mocks/mock.go
+
 type PersonRepository interface {
 	CreatePeople(data *models.PersonOut)
 	GetPeople() ([]*models.PersonOut, error)

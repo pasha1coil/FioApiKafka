@@ -83,9 +83,9 @@ func main() {
 	apiHandlers := handler.NewHandlers(service)
 	app.Get("/handler/people", apiHandlers.GetPersons)
 	app.Get("/handler/people/:id", apiHandlers.GetPersonByID)
-	app.Get("handler/people/name/:name", apiHandlers.GetPersonsByName)
-	app.Get("handler/people/age/:age", apiHandlers.GetPersonsByAge)
-	app.Get("handler/people/gender/:gender", apiHandlers.GetPersonsByGender)
+	app.Get("/handler/people/name/:name", apiHandlers.GetPersonsByName)
+	app.Get("/handler/people/age/:age", apiHandlers.GetPersonsByAge)
+	app.Get("/handler/people/gender/:gender", apiHandlers.GetPersonsByGender)
 	app.Post("/handler/people", apiHandlers.CreatePerson)
 	app.Put("/handler/people/:id", apiHandlers.UpdatePerson)
 	app.Delete("/handler/people/:id", apiHandlers.DeletePerson)
@@ -99,6 +99,7 @@ func main() {
 	log.Infoln("POST /handler/people")
 	log.Infoln("PUT /handler/people/:id")
 	log.Infoln("DELETE /handler/people/:id")
+	log.Infoln("/graphql")
 
 	// Канал который будет хранить данные о прошедших проверку FIO
 	aproovedFIO := make(chan *models.PersonOut, 100)
